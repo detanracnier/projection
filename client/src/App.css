@@ -1,0 +1,38 @@
+:root {
+  --warning: #de9645;
+  --danger: #ff2a00;
+}
+
+.header-row {
+  background-color: #1c1c1c;
+  color: #fff;
+  text-align: center;
+}
+
+.date-col {
+  text-align: center;
+  border-right: solid 1px #919191;
+}
+
+.account-balance {
+  border-left: solid 1px #919191;
+  border-right: solid 1px #919191;
+  text-align: right;
+}
+
+.warning {
+  background-color: var(--warning);
+}
+
+.danger {
+  background-color: var(--danger);
+  color: #fff;
+}
+
+@media only screen and (max-width: 900px) {
+  .date-col {
+    font-size: 0.7rem;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
