@@ -5,7 +5,7 @@ module.exports = {
     findAll: function (req, res) {
       db.Account
         .find(req.body)
-        .sort({ creationDate: -1 })
+        .sort({ id: 1 })
         .then(dbModel => res.json(dbModel))
         .catch(err => res.status(422).json(err));
     },
