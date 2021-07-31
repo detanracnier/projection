@@ -4,20 +4,19 @@ import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 const moment = require('moment');
 
-
+let numDaysToProject = 90
 let numRows = [];
-for (let x = 0; x < 60; x++) {
+for (let x = 0; x < numDaysToProject; x++) {
   numRows.push(x);
 }
-
-
 
 function ProjectionPage() {
   const [transactions, setTransactions] = useState([]);
   const [accounts, setAccounts] = useState([]);
+  const [transfers, setTransfers] = useState([]);
 
   // ----------
-  let startFromDate = moment('06-01-2021', 'MM-DD-YYYY').toObject();
+  let startFromDate = moment().add(-7,'days').toObject();
   // ----------
 
   // API calls to get initial state
@@ -40,7 +39,17 @@ function ProjectionPage() {
       .catch(err => {
         console.log(err);
       });
+    //get all transfers
+    axios.post('/api/transfer/search', {})
+    .then(response => {
+      console.log("Setting Transfers", response.data);
+      setTransfers(response.data);
+    })
+    .catch(err => {
+      console.log(err);
+    });
   }, []);
+
   // -------------------------
   //    Utility Functions
   // -------------------------
@@ -54,7 +63,6 @@ function ProjectionPage() {
       accountBalances.push(account.balance);
     })
     for (let row = 0; row < numRows.length; row++) {
-      // const rowDate = moment().add(row, 'days').startOf('day').toObject();
       const rowDate = moment(startFromDate).add(row, 'days').startOf('day').toObject();
       // Create a projection row
       projection.push(
@@ -64,11 +72,37 @@ function ProjectionPage() {
         });
       // Add accounts to projection row
       accounts.forEach((account, index) => {
-        projection[row].accounts.push({ transactions: [], balance: accountBalances[index] });
+        projection[row].accounts.push({ transactions: [], transfers: [], balance: accountBalances[index] });
       })
 
+      transfers.forEach((transfer) => {
+        if (dateMatch(transfer, rowDate)) {
+          let accountFromIndex = -1;
+          let accountToIndex = -1;
+          accounts.forEach((account, index) => {
+            if(account.id === transfer.fromAccountId){
+              accountFromIndex = index;
+            }
+            if(account.id === transfer.toAccountId){
+              accountToIndex = index;
+            }
+          })
+
+          let newBalance = accountBalances[accountFromIndex] - transfer.value;
+          accountBalances[accountFromIndex] = newBalance;
+          // Add the FROM account transfer and balance to the projection rows account
+          projection[row].accounts[accountFromIndex].transfers.push(transfer);
+          projection[row].accounts[accountFromIndex].balance = newBalance;
+
+          newBalance = accountBalances[accountToIndex] + transfer.value;
+          accountBalances[accountToIndex] = newBalance;
+          // Add the TO account transfer and balance to the projection rows account
+          projection[row].accounts[accountToIndex].transfers.push(transfer);
+          projection[row].accounts[accountToIndex].balance = newBalance;
+        }
+      });
       transactions.forEach((transaction) => {
-        if (dateMatchTransaction(transaction, rowDate)) {
+        if (dateMatch(transaction, rowDate)) {
           let accountIndex = accounts.map((account) => account.id).indexOf(transaction.accountId);
           let newBalance = accountBalances[accountIndex] + transaction.value;
           accountBalances[accountIndex] = newBalance;
@@ -81,10 +115,12 @@ function ProjectionPage() {
     return projection;
   }
   // Check if a date matches with a transaction date
-  function dateMatchTransaction(transaction, rowDate) {
+  function dateMatch(transaction, rowDate) {
     // One-time
     if (transaction.occurrence === "One-time") {
-      return transaction.date.date === rowDate.date;
+      return (transaction.date.date === rowDate.date)
+      && (transaction.date.months === rowDate.months)
+      && (transaction.date.years === rowDate.years);
     }
     // Monthly
     if (transaction.occurrence === "Monthly") {
@@ -111,6 +147,7 @@ function ProjectionPage() {
   // -------------------------
   function renderRows() {
     let projection = getProjection();
+    console.log("projection",projection);
     return projection.map((rowData) => {
       return <ProjectionRow
         key={uuidv4()}

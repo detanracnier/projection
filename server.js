@@ -6,6 +6,10 @@ const PORT = process.env.PORT || 3001;
 const dotenv = require("dotenv");
 dotenv.config();
 
+// Make Mongoose use `findOneAndUpdate()`. Note that this option is `true`
+// by default, you need to set it to false.
+mongoose.set('useFindAndModify', false);
+
 // Define middleware here
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

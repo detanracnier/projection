@@ -41,6 +41,9 @@ function ProjectionRow(props) {
                                     {account.transactions.map((transaction) => {
                                         return <div className={transaction.type === "income" ? "row text-success" : "row"}>{transaction.label}: {transaction.value}</div>
                                     })}
+                                    {account.transfers.map((transfer) => {
+                                        return <div className="row text-primary">Transfer from {transfer.fromAccountId} to {transfer.toAccountId}: {transfer.value}</div>
+                                    })}
                                 </div>
                                 {/* Balance column */}
                                 <div className={account.balance < 120

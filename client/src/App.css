@@ -2,6 +2,11 @@
   --warning: #de9645;
   --danger: #ff2a00;
 }
+body {
+  font-size: 1rem;
+}
+
+/* projection page ----------------*/
 
 .header-row {
   background-color: #1c1c1c;
@@ -20,6 +25,67 @@
   text-align: right;
 }
 
+/* Transactions page ----------------*/
+
+.transaction-container {
+  border: solid 3px #000;
+  border-radius: 6px;
+  margin: 0;
+}
+
+.transaction-label {
+  color: #fff;
+  font-size: 1.2rem;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.transaction-amount {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* Accounts page ---------------------*/
+
+.account-container {
+  border: solid 3px #000;
+  border-radius: 6px;
+  margin: 0;
+}
+
+
+/* modal ------------------------------*/
+
+.modal-bg {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: 9;
+}
+
+.transaction-modal {
+  position: fixed;
+  background-color: #fff;
+  border-radius: 6px;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 50%;
+  margin-left: 25vw;
+  margin-right: 25vw;
+  margin-top: 25vh;
+  z-index: 10;
+}
+
+/* Utilities ---------------------*/
+
+.round-tl {
+  border-radius: 6px;
+}
+
 .warning {
   background-color: var(--warning);
 }
@@ -29,7 +95,20 @@
   color: #fff;
 }
 
+.danger-gradient {
+  background-image: linear-gradient(to right, #ff004c, #ffffff );
+}
+
+.success-gradient {
+  background-image: linear-gradient(to right, #0ea600, #ffffff );
+}
+
+/* media queries ---------------------*/
+
 @media only screen and (max-width: 900px) {
+  body {
+    font-size: 0.7rem;
+  }
   .date-col {
     font-size: 0.7rem;
     padding-left: 0;
