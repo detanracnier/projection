@@ -61,7 +61,7 @@ function AccountsPage() {
                 });
         }
         if (method === "update") {
-            axios.put('/api/transaction/' + account._id, account)
+            axios.put('/api/account/' + account._id, account)
                 .then(response => {
                     console.log("Update Response", response.data)
                     let index = newAccountList.map((t) => t._id).indexOf(account._id);

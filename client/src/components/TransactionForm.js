@@ -6,7 +6,7 @@ const moment = require('moment');
 function TransactionForm(props) {
 
     const { transactionToEdit, accounts, handleUpdateTransactions, setShowForm } = props
-    const [transaction, setTransaction] = useState({ label: "", value: null, occurrence: "One-time", accountId: 1, date:moment().toObject() });
+    const [transaction, setTransaction] = useState({ label: "", value: 0, occurrence: "One-time", accountId: 1, date:moment().toObject() });
     const [unsavedChanges, setUnsavedChanges] = useState(false);
 
     useEffect(() => {
@@ -49,7 +49,7 @@ function TransactionForm(props) {
             method = "update"
         }
         console.log("Saving", method);
-        handleUpdateTransactions(method, transaction);
+        handleUpdateTransactions(method, transaction, "transaction");
         setShowForm(false);
     }
 
@@ -64,7 +64,7 @@ function TransactionForm(props) {
                                 <input
                                     type="text"
                                     id="label"
-                                    value={transaction.label || null}
+                                    value={transaction.label || ""}
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -74,31 +74,32 @@ function TransactionForm(props) {
                                     type="number"
                                     id="value"
                                     style={{width:"100px"}}
-                                    value={transaction.value || null}
+                                    value={transaction.value || 0}
                                     onChange={handleInputChange}
                                 />
                             </div>
                         </div>
                         <div className="row m-3">
                             <div className="col-4">
-                                Occurrence:
+                                <div>Occurrence:</div>
                                 <select
-                                    value={transaction.occurrence || null}
+                                    value={transaction.occurrence || "One-time"}
                                     id="occurrence"
                                     onChange={handleInputChange}
                                 >
                                     <option value="One-time">One-time</option>
                                     <option value="Monthly">Monthly</option>
+                                    <option value="Every 4 Weeks">Every 4 Weeks</option>
                                     <option value="Bi-Weekly">Bi-Weekly</option>
                                     <option value="Weekly">Weekly</option>
                                 </select>
                             </div>
                             <div className="col-4">
-                                Select a Date:
+                                <div>Select a Date:</div>
                                  <DatePicker selected={moment(transaction.date).toDate()} onChange={(date)=> handleDateChange(date)} />
                             </div>
                             <div className="col-4">
-                                Occurrence:
+                                <div>Account:</div>
                                 <select
                                     value={transaction.accountId || 1}
                                     id="accountId"
