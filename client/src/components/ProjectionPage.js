@@ -217,8 +217,16 @@ function ProjectionPage() {
   }
 
   function handleCellClicked(event) {
-    event.stopPropagation();
+    // event.stopPropagation();
     let type = event.target.dataset.type;
+    let id = event.target.id;
+    if(type === "account"){
+      let index = accounts.map((t)=>t._id).indexOf(id);
+      setItemToEdit(accounts[index]);
+      setShowAccountForm(true);
+      return;
+    }
+
     let eRowDate = JSON.parse(event.target.dataset.date);
     if(type === "empty"){
       let newTransaction = { label: "", value: null, occurrence: "One-time", accountId: 1, date:eRowDate }
@@ -227,8 +235,6 @@ function ProjectionPage() {
       setClickedRowDate(eRowDate);
       return;
     }
-
-    let id = event.target.id;
     if(type === "transaction"){
       let index = transactions.map((t)=>t._id).indexOf(id);
       setItemToEdit(transactions[index]);
@@ -240,11 +246,6 @@ function ProjectionPage() {
       setItemToEdit(transfers[index]);
       setShowTransferForm(true);
       setClickedRowDate(eRowDate);
-    }
-    if(type === "account"){
-      let index = accounts.map((t)=>t._id).indexOf(id);
-      setItemToEdit(accounts[index]);
-      setShowAccountForm(true);
     }
   }
 

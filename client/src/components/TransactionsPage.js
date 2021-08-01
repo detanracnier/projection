@@ -41,6 +41,19 @@ function TransactionsPage() {
     //    Utility Functions
     // -------------------------
 
+    function getNumberFix(date) {
+        let fix = "";
+        let lastNum = date % 10;
+        if (lastNum === 1) { fix = "st"; }
+        else if (lastNum === 2) {
+            if (parseInt(date.date) === 12) { fix = "th"; }
+            else { fix = "nd"; }}
+        else if (lastNum === 3) { fix = "rd"; }
+        else if (lastNum > 3) { fix = "th"; };
+        
+        return fix;
+    }
+
     function getDateString(date, occurrence) {
         let myDate = moment(date);
         let string = ""
@@ -48,13 +61,17 @@ function TransactionsPage() {
             string += date.months + "-" + date.date + "-" + date.years;
         }
         if (occurrence === "Monthly") {
-            string += date.date + " of every month";
+            let fix = getNumberFix(date.date);
+            string += date.date + fix + " of every month";
         }
         if (occurrence === "Bi-Weekly") {
             string += "Every other " + myDate.format("dddd");
         }
         if (occurrence === "Weekly") {
             string += "Every " + myDate.format("dddd");
+        }
+        if (occurrence === "Every 4 Weeks") {
+            string += "Every 4 Weeks on " + myDate.format("dddd");
         }
         return string;
     }
@@ -78,7 +95,7 @@ function TransactionsPage() {
 
     function handleEdit(event) {
         let id = event.target.value;
-        let index = transactions.map((t)=>t._id).indexOf(id);
+        let index = transactions.map((t) => t._id).indexOf(id);
         setTransactionToEdit(transactions[index]);
         setShowForm(true);
     }
@@ -93,39 +110,39 @@ function TransactionsPage() {
         console.log("Updating", transaction);
         if (method === "delete") {
             axios.post('/api/transaction/delete/' + transaction)
-            .then(response => {
-                console.log("Delete Response", response.data);
-                newTransactionsList = newTransactionsList.filter((t) => t._id !== transaction);
-                setTransactions(newTransactionsList);
-            })
-            .catch(err => {
-                console.log(err);
-            });
+                .then(response => {
+                    console.log("Delete Response", response.data);
+                    newTransactionsList = newTransactionsList.filter((t) => t._id !== transaction);
+                    setTransactions(newTransactionsList);
+                })
+                .catch(err => {
+                    console.log(err);
+                });
         }
         if (method === "new") {
             transaction.type = transaction.value < 0 ? "bill" : "income";
             axios.post('/api/transaction/', transaction)
-            .then(response => {
-                console.log("Add New Response", response.data)
-                transaction._id = response.data._id;
-                newTransactionsList.push(transaction);
-                setTransactions(newTransactionsList);
-            })
-            .catch(err => {
-                console.log(err);
-            });
+                .then(response => {
+                    console.log("Add New Response", response.data)
+                    transaction._id = response.data._id;
+                    newTransactionsList.push(transaction);
+                    setTransactions(newTransactionsList);
+                })
+                .catch(err => {
+                    console.log(err);
+                });
         }
         if (method === "update") {
             axios.put('/api/transaction/' + transaction._id, transaction)
-            .then(response => {
-                console.log("Update Response", response.data)
-                let index = newTransactionsList.map((t)=>t._id).indexOf(transaction._id);
-                newTransactionsList[index] = transaction;
-                setTransactions(newTransactionsList);
-            })
-            .catch(err => {
-                console.log(err);
-            });
+                .then(response => {
+                    console.log("Update Response", response.data)
+                    let index = newTransactionsList.map((t) => t._id).indexOf(transaction._id);
+                    newTransactionsList[index] = transaction;
+                    setTransactions(newTransactionsList);
+                })
+                .catch(err => {
+                    console.log(err);
+                });
         }
     }
 
