@@ -81,21 +81,6 @@ function ProjectionRow(props) {
                                     onDragOver={handleOver}
                                     onDrop={handleDrop}
                                     className="col-8">
-                                    {/* Transaction */}
-                                    {account.transactions.map((transaction) => {
-                                        return <div
-                                            onClick={handleCellClicked}
-                                            id={transaction._id}
-                                            data-type="transaction"
-                                            data-date={JSON.stringify(rowData.date)}
-                                            draggable
-                                            onDragStart={handleDragStart}
-                                            onDrag={handleDrag}
-                                            onDragEnd={handleDragEnd}
-                                            className={transaction.type === "income"
-                                                ? "row bg-success"
-                                                : "row"}>{transaction.label}: {transaction.value}</div>
-                                    })}
                                     {/* Transfer */}
                                     {account.transfers.map((transfer) => {
                                         return (
@@ -110,10 +95,25 @@ function ProjectionRow(props) {
                                                 onDragEnd={handleDragEnd}
                                                 className={transfer.toAccountId === 4 ? "row bg-blaze": "row bg-cool"}>
                                                 {account.label === transfer.fromAccountLabel
-                                                    ? (<React.Fragment><span className="text-sm">Transfer to </span> {transfer.toAccountLabel}: -</React.Fragment>)
-                                                    : (<React.Fragment><span className="text-sm">Transfer from </span> {transfer.fromAccountLabel}: </React.Fragment>)}
+                                                    ? (<React.Fragment><span className="text-sm d-block">Transfer to </span> {transfer.toAccountLabel}: -</React.Fragment>)
+                                                    : (<React.Fragment><span className="text-sm d-block">Transfer from </span> {transfer.fromAccountLabel}: </React.Fragment>)}
                                                 {transfer.value}
                                             </div>)
+                                    })}
+                                    {/* Transaction */}
+                                    {account.transactions.map((transaction) => {
+                                        return <div
+                                            onClick={handleCellClicked}
+                                            id={transaction._id}
+                                            data-type="transaction"
+                                            data-date={JSON.stringify(rowData.date)}
+                                            draggable
+                                            onDragStart={handleDragStart}
+                                            onDrag={handleDrag}
+                                            onDragEnd={handleDragEnd}
+                                            className={transaction.type === "income"
+                                                ? "row bg-success"
+                                                : "row"}>{transaction.label}: {transaction.value}</div>
                                     })}
                                 </div>
                                 {/* Balance */}

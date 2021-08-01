@@ -130,6 +130,11 @@ select {
 
 /* Utilities ---------------------*/
 
+.d-block {
+  display: block;
+  width: 100%;
+}
+
 .text-sm {
   font-size: 70%;
 }
