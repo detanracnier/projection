@@ -36,39 +36,38 @@ function App() {
     }
   }
 
-  // return (
-  //   <div className="App">
-  //     <div>
-  //       {/* Page controls */}
-  //       <button
-  //         value="projection"
-  //         className={activePage === "projection" ? "btn btn-success m-1": "btn btn-dark m-1"}
-  //         onClick={handleNavClick} >
-  //           Projection
-  //       </button>
-  //       <button
-  //         value="transactions"
-  //         className={activePage === "transactions" ? "btn btn-success m-1": "btn btn-dark m-1"}
-  //         onClick={handleNavClick} >
-  //           Add/Edit Transactions
-  //       </button>
-  //       <button
-  //         value="transfers"
-  //         className={activePage === "transfers" ? "btn btn-success m-1": "btn btn-dark m-1"}
-  //         onClick={handleNavClick} >
-  //           Add/Edit Transfers
-  //       </button>
-  //       <button
-  //         value="accounts"
-  //         className={activePage === "accounts" ? "btn btn-success m-1": "btn btn-dark m-1"}
-  //         onClick={handleNavClick} >
-  //           Edit Accounts
-  //       </button>
-  //     </div>
-  //     {renderPage()}
-  //   </div>
-  // );
-  return(<div>Hello world</div>)
+  return (
+    <div className="App">
+      <div>
+        {/* Page controls */}
+        <button
+          value="projection"
+          className={activePage === "projection" ? "btn btn-success m-1": "btn btn-dark m-1"}
+          onClick={handleNavClick} >
+            Projection
+        </button>
+        <button
+          value="transactions"
+          className={activePage === "transactions" ? "btn btn-success m-1": "btn btn-dark m-1"}
+          onClick={handleNavClick} >
+            Add/Edit Transactions
+        </button>
+        <button
+          value="transfers"
+          className={activePage === "transfers" ? "btn btn-success m-1": "btn btn-dark m-1"}
+          onClick={handleNavClick} >
+            Add/Edit Transfers
+        </button>
+        <button
+          value="accounts"
+          className={activePage === "accounts" ? "btn btn-success m-1": "btn btn-dark m-1"}
+          onClick={handleNavClick} >
+            Edit Accounts
+        </button>
+      </div>
+      {renderPage()}
+    </div>
+  );
 }
 
 export default App;
