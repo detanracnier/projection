@@ -1,4 +1,7 @@
 import React from "react";
+import newTransfer from '../data/newTransfer';
+import newTransaction from "../data/newTransaction";
+
 
 function FormControls(props){
 
@@ -10,15 +13,17 @@ function FormControls(props){
     } = props;
 
     function handleNewTransfer(){
-        let newTransfer = { fromAccount: 0, toAccountId: 0, value: null, occurrence: "One-time", date:clickedRowDate }
-        setItemToEdit(newTransfer);
+        let newItem = newTransfer;
+        newItem.date = clickedRowDate;
+        setItemToEdit(newItem);
         setShowTransactionForm(false);
         setShowTransferForm(true)
     }
 
     function handleNewTransaction(){
-        let newTransaction = { label: "", value: null, occurrence: "One-time", accountId: 1, date:clickedRowDate }
-        setItemToEdit(newTransaction);
+        let newItem = newTransaction;
+        newItem.date = clickedRowDate;
+        setItemToEdit(newItem);
         setShowTransferForm(false)
         setShowTransactionForm(true);
     }

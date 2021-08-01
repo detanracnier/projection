@@ -4,6 +4,7 @@ import AccountForm from "./AccountForm";
 import TransferForm from "./TransferForm";
 import TransactionForm from "./TransactionForm";
 import FormControls from "./FormControls";
+import newTransaction from "../data/newTransaction";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 const moment = require('moment');
@@ -136,7 +137,7 @@ function ProjectionPage() {
       let d = exception.date;
       let r = rowDate;
       if (d.date === r.date && d.months === r.months && d.years === r.years) {
-        if(exception.offset !== 0){
+        if (exception.offset !== 0) {
           skip = 1
         }
       } else {
@@ -213,8 +214,7 @@ function ProjectionPage() {
       axios.post('/api/' + model + '/', newData)
         .then(response => {
           console.log("Add New Response", response.data)
-          newData._id = response.data._id;
-          newList.push(newData);
+          newList.push(response.data);
           setList(newList);
         })
         .catch(err => {
@@ -248,8 +248,9 @@ function ProjectionPage() {
 
     let eRowDate = JSON.parse(event.target.dataset.date);
     if (type === "empty") {
-      let newTransaction = { label: "", value: null, occurrence: "One-time", accountId: 1, date: eRowDate }
-      setItemToEdit(newTransaction);
+      let newItem = newTransaction;
+      newItem.date = eRowDate;
+      setItemToEdit(newItem);
       setShowTransactionForm(true);
       setClickedRowDate(eRowDate);
       return;
@@ -283,29 +284,30 @@ function ProjectionPage() {
       if (offset === 0) {
         return;
       }
+      let itemList = [];
+      if (type === "transaction") { itemList = transactions; }
+      if (type === "transfer") { itemList = transfers; }
 
-      if (type === "transaction") {
-        let index = transactions.map((t) => t._id).indexOf(itemId);
-        let newTransaction = transactions[index];
-        let eIndex = -1;
-        newTransaction.exceptions.forEach((e, index) => {
-          let eOffsetDate = moment(e.date).add(e.offset,'days');
-          console.log("Checking", eOffsetDate, oldDate);
-          if (eOffsetDate.diff(oldDate, 'days') === 0) {
-            console.log("same day");
-            eIndex = index;
-          }
-        });
-        if (eIndex > -1) {
-          console.log("Overwriting exception");
-          newTransaction.exceptions[eIndex].offset = newTransaction.exceptions[eIndex].offset + offset;
-        } else {
-          console.log("Adding new exception");
-          newTransaction.exceptions.push({ date: oldDate.toObject(), offset: offset });
+      let index = itemList.map((t) => t._id).indexOf(itemId);
+      let newTrans = itemList[index];
+      let eIndex = -1;
+      newTrans.exceptions.forEach((e, index) => {
+        let eOffsetDate = moment(e.date).add(e.offset, 'days');
+        console.log("Checking", eOffsetDate, oldDate);
+        if (eOffsetDate.diff(oldDate, 'days') === 0) {
+          console.log("same day");
+          eIndex = index;
         }
-
-        handleUpdate("update", newTransaction, "transaction")
+      });
+      if (eIndex > -1) {
+        console.log("Overwriting exception");
+        newTrans.exceptions[eIndex].offset = newTrans.exceptions[eIndex].offset + offset;
+      } else {
+        console.log("Adding new exception");
+        newTrans.exceptions.push({ date: oldDate.toObject(), offset: offset });
       }
+
+      handleUpdate("update", newTrans, type)
       setDragElement(null);
     }
   }

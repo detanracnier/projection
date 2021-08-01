@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import TransferForm from "./TransferForm";
 import axios from "axios";
-const moment = require('moment');
 
 function TransferPage() {
 

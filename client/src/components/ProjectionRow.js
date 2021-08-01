@@ -30,14 +30,14 @@ function ProjectionRow(props) {
     function handleDragStart(event) {
         let fromDate = event.target.dataset.date;
         let type = event.target.dataset.type;
-        setDragElement(type+"::"+event.target.id+"::"+fromDate);
+        setDragElement(type + "::" + event.target.id + "::" + fromDate);
     }
 
     function handleDrag() {
         // console.log("Dragging");
     }
 
-    function handleDragEnd(){
+    function handleDragEnd() {
         // console.log("Ending");
     }
 
@@ -104,6 +104,10 @@ function ProjectionRow(props) {
                                                 id={transfer._id}
                                                 data-type="transfer"
                                                 data-date={JSON.stringify(rowData.date)}
+                                                draggable
+                                                onDragStart={handleDragStart}
+                                                onDrag={handleDrag}
+                                                onDragEnd={handleDragEnd}
                                                 className="row text-primary">
                                                 {account.label === transfer.fromAccountLabel
                                                     ? (<React.Fragment><span className="text-sm">Transfer to </span> {transfer.toAccountLabel}: -</React.Fragment>)

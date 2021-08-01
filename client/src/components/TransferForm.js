@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import newTransfer from '../data/newTransfer';
 const moment = require('moment');
 
 function TransferForm(props) {
 
     const { transferToEdit, accounts, handleUpdateTransfer, setShowForm } = props
-    const [transfer, setTransfer] = useState({ fromAccount: 0, toAccountId: 0, value: 0, occurrence: "One-time", date:moment().toObject() });
+    const [transfer, setTransfer] = useState(newTransfer);
     const [unsavedChanges, setUnsavedChanges] = useState(false);
 
     useEffect(() => {
