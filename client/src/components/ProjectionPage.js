@@ -319,16 +319,18 @@ function ProjectionPage() {
   //    Render Functions
   // -------------------------
   function renderRows() {
-    let projection = getProjection();
-    return projection.map((rowData) => {
-      return <ProjectionRow
-        handleException={handleException}
-        setDragElement={setDragElement}
-        handleCellClicked={handleCellClicked}
-        key={uuidv4()}
-        rowData={rowData}
-      />;
-    });
+    if(accounts.length > 0){
+      let projection = getProjection();
+      return projection.map((rowData) => {
+        return <ProjectionRow
+          handleException={handleException}
+          setDragElement={setDragElement}
+          handleCellClicked={handleCellClicked}
+          key={uuidv4()}
+          rowData={rowData}
+        />;
+      });
+    }
   }
 
   return (
