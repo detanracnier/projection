@@ -369,9 +369,26 @@ function ProjectionPage() {
       <div className="container-fluid p-3">
         {/* Header Row */}
         <div className="row header-row">
-          <div className="col-1">Date</div>
+          <div className="col-1">
+            <div>Date</div>
+          </div>
           {accounts.map((account) => {
-            return <div className="col">{account.label}</div>
+            return (
+            <div className="col">
+              <div className="row">
+                <div className="col-12">
+                  {account.label}
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-8">
+                  Transactions
+                </div>
+                <div className="col-4">
+                  Balance
+                </div>
+              </div>
+            </div>)
           })}
         </div>
         {/* Date Rows */}
