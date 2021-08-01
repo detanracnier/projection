@@ -98,7 +98,7 @@ function ProjectionPage() {
           // Add the FROM account transfer and balance to the projection rows account
           transfer.fromAccountLabel = accounts[accountFromIndex].label;
           projection[row].accounts[accountFromIndex].transfers.push(transfer);
-          if(lookBack < row){
+          if (lookBack < row) {
             accountBalances[accountFromIndex] = newBalance;
             projection[row].accounts[accountFromIndex].balance = newBalance;
           }
@@ -107,7 +107,7 @@ function ProjectionPage() {
           // Add the TO account transfer and balance to the projection rows account
           transfer.toAccountLabel = accounts[accountToIndex].label;
           projection[row].accounts[accountToIndex].transfers.push(transfer);
-          if(lookBack < row){
+          if (lookBack < row) {
             accountBalances[accountToIndex] = newBalance;
             projection[row].accounts[accountToIndex].balance = newBalance;
           }
@@ -119,7 +119,7 @@ function ProjectionPage() {
           let newBalance = accountBalances[accountIndex] + parseInt(transaction.value);
           // Add the transaction and balance to the projection rows account
           projection[row].accounts[accountIndex].transactions.push(transaction);
-          if(lookBack < row){
+          if (lookBack < row) {
             accountBalances[accountIndex] = newBalance;
             projection[row].accounts[accountIndex].balance = newBalance;
           }
@@ -131,27 +131,23 @@ function ProjectionPage() {
   // Check if a date matches with a transaction date
   function dateMatch(t, rowDate) {
     let trans = t;
-    console.log("Row:", rowDate);
-    console.log("Checking trans", trans);
     let skip = 0;
-    trans.exceptions.forEach((exception)=>{
-      console.log("Checking exception", exception);
+    trans.exceptions.forEach((exception) => {
       let d = exception.date;
       let r = rowDate;
-      if(d.date === r.date && d.months === r.months && d.years === r.years){
-        console.log(d, rowDate, "match");
-        skip = 1
+      if (d.date === r.date && d.months === r.months && d.years === r.years) {
+        if(exception.offset !== 0){
+          skip = 1
+        }
       } else {
         let offSetD = moment(exception.date).startOf('day').add(exception.offset, 'days').toObject();
-        if(offSetD.date === r.date && offSetD.months === r.months && offSetD.years === r.years){
-          console.log(offSetD, rowDate, "match offset");
+        if (offSetD.date === r.date && offSetD.months === r.months && offSetD.years === r.years) {
           skip = -1
         }
       }
     });
-    if(skip === -1){ return true; }
-    if(skip ===  1){ return false; }
-    console.log("Checking occurances");
+    if (skip === -1) { return true; }
+    if (skip === 1) { return false; }
     // One-time
     if (trans.occurrence === "One-time") {
       return (trans.date.date === rowDate.date)
@@ -243,55 +239,74 @@ function ProjectionPage() {
     // event.stopPropagation();
     let type = event.target.dataset.type;
     let id = event.target.id;
-    if(type === "account"){
-      let index = accounts.map((t)=>t._id).indexOf(id);
+    if (type === "account") {
+      let index = accounts.map((t) => t._id).indexOf(id);
       setItemToEdit(accounts[index]);
       setShowAccountForm(true);
       return;
     }
 
     let eRowDate = JSON.parse(event.target.dataset.date);
-    if(type === "empty"){
-      let newTransaction = { label: "", value: null, occurrence: "One-time", accountId: 1, date:eRowDate }
+    if (type === "empty") {
+      let newTransaction = { label: "", value: null, occurrence: "One-time", accountId: 1, date: eRowDate }
       setItemToEdit(newTransaction);
       setShowTransactionForm(true);
       setClickedRowDate(eRowDate);
       return;
     }
-    if(type === "transaction"){
-      let index = transactions.map((t)=>t._id).indexOf(id);
+    if (type === "transaction") {
+      let index = transactions.map((t) => t._id).indexOf(id);
       setItemToEdit(transactions[index]);
       setShowTransactionForm(true);
       setClickedRowDate(eRowDate);
     }
-    if(type === "transfer"){
-      let index = transfers.map((t)=>t._id).indexOf(id);
+    if (type === "transfer") {
+      let index = transfers.map((t) => t._id).indexOf(id);
       setItemToEdit(transfers[index]);
       setShowTransferForm(true);
       setClickedRowDate(eRowDate);
     }
   }
 
-  function handleException(date){
-    if(dragElement){
+  function handleException(date) {
+    if (dragElement) {
       let splitData = dragElement.split("::");
-      console.log(splitData);
       let type = splitData[0]
       let itemId = splitData[1];
       let oldDate = moment(JSON.parse(splitData[2])).startOf('day');
       let newDate = moment(JSON.parse(date)).startOf('day');
+
+      let offset = newDate.diff(oldDate, 'days');
+
       // If it's the same day, bail
-      if(oldDate === newDate){
+      console.log("Date difference", offset);
+      if (offset === 0) {
         return;
       }
-      let offset = newDate.diff(oldDate,'days');
 
-      if(type==="transaction"){
-        let index = transactions.map((t)=>t._id).indexOf(itemId);
+      if (type === "transaction") {
+        let index = transactions.map((t) => t._id).indexOf(itemId);
         let newTransaction = transactions[index];
-        newTransaction.exceptions.push({date:oldDate.toObject(),offset:offset});
-        handleUpdate("update",newTransaction,"transaction")
+        let eIndex = -1;
+        newTransaction.exceptions.forEach((e, index) => {
+          let eOffsetDate = moment(e.date).add(e.offset,'days');
+          console.log("Checking", eOffsetDate, oldDate);
+          if (eOffsetDate.diff(oldDate, 'days') === 0) {
+            console.log("same day");
+            eIndex = index;
+          }
+        });
+        if (eIndex > -1) {
+          console.log("Overwriting exception");
+          newTransaction.exceptions[eIndex].offset = newTransaction.exceptions[eIndex].offset + offset;
+        } else {
+          console.log("Adding new exception");
+          newTransaction.exceptions.push({ date: oldDate.toObject(), offset: offset });
+        }
+
+        handleUpdate("update", newTransaction, "transaction")
       }
+      setDragElement(null);
     }
   }
 

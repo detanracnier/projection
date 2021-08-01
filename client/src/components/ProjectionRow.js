@@ -28,7 +28,6 @@ function ProjectionRow(props) {
     // -------------------------
 
     function handleDragStart(event) {
-        console.log("Dragging", event.target.id);
         let fromDate = event.target.dataset.date;
         let type = event.target.dataset.type;
         setDragElement(type+"::"+event.target.id+"::"+fromDate);
@@ -43,13 +42,8 @@ function ProjectionRow(props) {
     }
 
     function handleDrop(event) {
-        // console.log("Dropped onto event", event);
-        console.log("Dropped onto", event.target);
         let newDate = event.target.dataset.date;
         handleException(newDate);
-        // let newDate = JSON.parse(event.target.dataset.date);
-        // let thing = { newDate };
-        // console.log("thing", thing);
     }
 
     function handleEnter(event) {
