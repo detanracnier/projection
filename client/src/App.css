@@ -29,6 +29,10 @@ select {
   display: block;
 }
 
+.account-col {
+  border-right: solid 4px #000;
+}
+
 .account-balance {
   border-left: solid 1px #919191;
   border-right: solid 1px #919191;
@@ -145,6 +149,19 @@ select {
 .danger {
   background-color: var(--danger);
   color: #fff;
+}
+
+.bg-success {
+  background-color: #14a800;
+}
+
+.bg-cool {
+  background-color: #003aa6;
+  color: #fff;
+}
+
+.bg-blaze {
+  background-color: #cc8100;
 }
 
 .in-past {

@@ -70,7 +70,7 @@ function ProjectionRow(props) {
                 {rowData.accounts.map((account) => {
                     return (
                         // Account column
-                        <div className="col">
+                        <div className="col account-col">
                             <div
                                 className="row h100"
                                 onClick={handleCellClicked}>
@@ -93,7 +93,7 @@ function ProjectionRow(props) {
                                             onDrag={handleDrag}
                                             onDragEnd={handleDragEnd}
                                             className={transaction.type === "income"
-                                                ? "row text-success"
+                                                ? "row bg-success"
                                                 : "row"}>{transaction.label}: {transaction.value}</div>
                                     })}
                                     {/* Transfer */}
@@ -108,7 +108,7 @@ function ProjectionRow(props) {
                                                 onDragStart={handleDragStart}
                                                 onDrag={handleDrag}
                                                 onDragEnd={handleDragEnd}
-                                                className="row text-primary">
+                                                className={transfer.toAccountId === 4 ? "row bg-blaze": "row bg-cool"}>
                                                 {account.label === transfer.fromAccountLabel
                                                     ? (<React.Fragment><span className="text-sm">Transfer to </span> {transfer.toAccountLabel}: -</React.Fragment>)
                                                     : (<React.Fragment><span className="text-sm">Transfer from </span> {transfer.fromAccountLabel}: </React.Fragment>)}

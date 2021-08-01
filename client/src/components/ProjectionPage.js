@@ -95,22 +95,25 @@ function ProjectionPage() {
               accountToIndex = index;
             }
           })
-          let newBalance = accountBalances[accountFromIndex] - parseInt(transfer.value);
-          // Add the FROM account transfer and balance to the projection rows account
-          transfer.fromAccountLabel = accounts[accountFromIndex].label;
-          projection[row].accounts[accountFromIndex].transfers.push(transfer);
-          if (lookBack < row) {
-            accountBalances[accountFromIndex] = newBalance;
-            projection[row].accounts[accountFromIndex].balance = newBalance;
+          if(accountFromIndex !== -1){
+            let newBalance = accountBalances[accountFromIndex] - parseInt(transfer.value);
+            // Add the FROM account transfer and balance to the projection rows account
+            transfer.fromAccountLabel = accounts[accountFromIndex].label;
+            projection[row].accounts[accountFromIndex].transfers.push(transfer);
+            if (lookBack < row) {
+              accountBalances[accountFromIndex] = newBalance;
+              projection[row].accounts[accountFromIndex].balance = newBalance;
+            }
           }
-
-          newBalance = accountBalances[accountToIndex] + parseInt(transfer.value);
-          // Add the TO account transfer and balance to the projection rows account
-          transfer.toAccountLabel = accounts[accountToIndex].label;
-          projection[row].accounts[accountToIndex].transfers.push(transfer);
-          if (lookBack < row) {
-            accountBalances[accountToIndex] = newBalance;
-            projection[row].accounts[accountToIndex].balance = newBalance;
+          if(accountToIndex !== -1){
+            let newBalance = accountBalances[accountToIndex] + parseInt(transfer.value);
+            // Add the TO account transfer and balance to the projection rows account
+            transfer.toAccountLabel = accounts[accountToIndex].label;
+            projection[row].accounts[accountToIndex].transfers.push(transfer);
+            if (lookBack < row) {
+              accountBalances[accountToIndex] = newBalance;
+              projection[row].accounts[accountToIndex].balance = newBalance;
+            }
           }
         }
       });
