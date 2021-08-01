@@ -6,7 +6,7 @@ const moment = require('moment');
 function TransferForm(props) {
 
     const { transferToEdit, accounts, handleUpdateTransfer, setShowForm } = props
-    const [transfer, setTransfer] = useState({ fromAccount: 0, toAccountId: 0, value: null, occurrence: "One-time", date:moment().toObject() });
+    const [transfer, setTransfer] = useState({ fromAccount: 0, toAccountId: 0, value: 0, occurrence: "One-time", date:moment().toObject() });
     const [unsavedChanges, setUnsavedChanges] = useState(false);
 
     useEffect(() => {
@@ -68,7 +68,7 @@ function TransferForm(props) {
                                     type="number"
                                     id="value"
                                     style={{width:"100px"}}
-                                    value={transfer.value || 0}
+                                    value={transfer.value}
                                     onChange={handleInputChange}
                                 />
                             </div>

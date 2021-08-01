@@ -6,7 +6,7 @@ const moment = require('moment');
 function TransactionForm(props) {
 
     const { transactionToEdit, accounts, handleUpdateTransactions, setShowForm } = props
-    const [transaction, setTransaction] = useState({ label: "", value: 0, occurrence: "One-time", accountId: 1, date:moment().toObject() });
+    const [transaction, setTransaction] = useState({ type:"bill", label: "", value: 0, occurrence: "One-time", accountId: 1, date:moment().toObject() });
     const [unsavedChanges, setUnsavedChanges] = useState(false);
 
     useEffect(() => {
@@ -44,12 +44,16 @@ function TransactionForm(props) {
     }
 
     function handleSave(){
+        let data = transaction;
+        if(data.value > 0) {
+            data.type = "income";
+        }
         let method = "new"
         if(transaction.hasOwnProperty("_id")){
             method = "update"
         }
         console.log("Saving", method);
-        handleUpdateTransactions(method, transaction, "transaction");
+        handleUpdateTransactions(method, data, "transaction");
         setShowForm(false);
     }
 
@@ -74,7 +78,7 @@ function TransactionForm(props) {
                                     type="number"
                                     id="value"
                                     style={{width:"100px"}}
-                                    value={transaction.value || 0}
+                                    value={transaction.value}
                                     onChange={handleInputChange}
                                 />
                             </div>

@@ -6,10 +6,18 @@ const TransactionSchema = new Schema({
     label: { type: String, required: true },
     accountId: { type: Number, required: true },
     date: {
-        years: { type: Number},
+        years: { type: Number },
         months: { type: Number },
         date: { type: Number },
-     },
+    },
+    exceptions: [{
+        date: {
+            years: { type: Number },
+            months: { type: Number },
+            date: { type: Number },
+        },
+        offset: { type: Number }
+    }],
     occurrence: { type: String, required: true },
     value: { type: Number, required: true },
     creationDate: { type: Date, default: Date.now }

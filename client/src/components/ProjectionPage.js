@@ -20,6 +20,7 @@ function ProjectionPage() {
   const [showTransactionForm, setShowTransactionForm] = useState(false);
   const [itemToEdit, setItemToEdit] = useState(null);
   const [clickedRowDate, setClickedRowDate] = useState(null);
+  const [dragElement, setDragElement] = useState(null);
 
   // ----------
   let startFromDate = moment().add(-lookBack, 'days').toObject();
@@ -128,34 +129,56 @@ function ProjectionPage() {
     return projection;
   }
   // Check if a date matches with a transaction date
-  function dateMatch(transaction, rowDate) {
+  function dateMatch(t, rowDate) {
+    let trans = t;
+    console.log("Row:", rowDate);
+    console.log("Checking trans", trans);
+    let skip = 0;
+    trans.exceptions.forEach((exception)=>{
+      console.log("Checking exception", exception);
+      let d = exception.date;
+      let r = rowDate;
+      if(d.date === r.date && d.months === r.months && d.years === r.years){
+        console.log(d, rowDate, "match");
+        skip = 1
+      } else {
+        let offSetD = moment(exception.date).startOf('day').add(exception.offset, 'days').toObject();
+        if(offSetD.date === r.date && offSetD.months === r.months && offSetD.years === r.years){
+          console.log(offSetD, rowDate, "match offset");
+          skip = -1
+        }
+      }
+    });
+    if(skip === -1){ return true; }
+    if(skip ===  1){ return false; }
+    console.log("Checking occurances");
     // One-time
-    if (transaction.occurrence === "One-time") {
-      return (transaction.date.date === rowDate.date)
-        && (transaction.date.months === rowDate.months)
-        && (transaction.date.years === rowDate.years);
+    if (trans.occurrence === "One-time") {
+      return (trans.date.date === rowDate.date)
+        && (trans.date.months === rowDate.months)
+        && (trans.date.years === rowDate.years);
     }
     // Monthly
-    if (transaction.occurrence === "Monthly") {
-      return transaction.date.date === rowDate.date;
+    if (trans.occurrence === "Monthly") {
+      return trans.date.date === rowDate.date;
     }
 
-    let a = moment(transaction.date).startOf('day');
+    let a = moment(trans.date).startOf('day');
     let b = moment(rowDate).startOf('day');
     let difference = a.diff(b, 'days');
     // 4-Weeks
-    if (transaction.occurrence === "Every 4 Weeks") {
+    if (trans.occurrence === "Every 4 Weeks") {
       return difference % 28 === 0;
     }
     // Bi-Weekly
-    if (transaction.occurrence === "Bi-Weekly") {
+    if (trans.occurrence === "Bi-Weekly") {
       return difference % 14 === 0;
     }
     // Weekly
-    if (transaction.occurrence === "Weekly") {
+    if (trans.occurrence === "Weekly") {
       return difference % 7 === 0;
     }
-    console.log("Transaction occurrance not found");
+    console.log("trans occurrance not found");
     return false;
   }
 
@@ -249,6 +272,29 @@ function ProjectionPage() {
     }
   }
 
+  function handleException(date){
+    if(dragElement){
+      let splitData = dragElement.split("::");
+      console.log(splitData);
+      let type = splitData[0]
+      let itemId = splitData[1];
+      let oldDate = moment(JSON.parse(splitData[2])).startOf('day');
+      let newDate = moment(JSON.parse(date)).startOf('day');
+      // If it's the same day, bail
+      if(oldDate === newDate){
+        return;
+      }
+      let offset = newDate.diff(oldDate,'days');
+
+      if(type==="transaction"){
+        let index = transactions.map((t)=>t._id).indexOf(itemId);
+        let newTransaction = transactions[index];
+        newTransaction.exceptions.push({date:oldDate.toObject(),offset:offset});
+        handleUpdate("update",newTransaction,"transaction")
+      }
+    }
+  }
+
   // -------------------------
   //    Render Functions
   // -------------------------
@@ -256,6 +302,8 @@ function ProjectionPage() {
     let projection = getProjection();
     return projection.map((rowData) => {
       return <ProjectionRow
+        handleException={handleException}
+        setDragElement={setDragElement}
         handleCellClicked={handleCellClicked}
         key={uuidv4()}
         rowData={rowData}

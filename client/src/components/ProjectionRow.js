@@ -1,15 +1,13 @@
-import React, { useEffect } from "react";
+import React from "react";
 const moment = require('moment');
 
 function ProjectionRow(props) {
-    const rowData = props.rowData;
-    const handleCellClicked = props.handleCellClicked;
-
-    useEffect(() => {
-        if (rowData.accounts.length > 0) {
-            // console.log("Row data for " + rowData.date.date, rowData);
-        }
-    });
+    const {
+        handleException,
+        setDragElement,
+        rowData,
+        handleCellClicked
+    } = props;
 
     // -------------------------
     //    Utility Functions
@@ -23,6 +21,44 @@ function ProjectionRow(props) {
     function checkIfInPast(date) {
         let check = moment(date).isBefore(moment().startOf('day').toObject());
         return check;
+    }
+
+    // -------------------------
+    //    Handler Functions
+    // -------------------------
+
+    function handleDragStart(event) {
+        console.log("Dragging", event.target.id);
+        let fromDate = event.target.dataset.date;
+        let type = event.target.dataset.type;
+        setDragElement(type+"::"+event.target.id+"::"+fromDate);
+    }
+
+    function handleDrag() {
+        // console.log("Dragging");
+    }
+
+    function handleDragEnd(){
+        // console.log("Ending");
+    }
+
+    function handleDrop(event) {
+        // console.log("Dropped onto event", event);
+        console.log("Dropped onto", event.target);
+        let newDate = event.target.dataset.date;
+        handleException(newDate);
+        // let newDate = JSON.parse(event.target.dataset.date);
+        // let thing = { newDate };
+        // console.log("thing", thing);
+    }
+
+    function handleEnter(event) {
+        // console.log("Entering");
+    }
+
+    function handleOver(event) {
+        event.stopPropagation();
+        event.preventDefault();
     }
 
     return (
@@ -47,6 +83,9 @@ function ProjectionRow(props) {
                                 <div
                                     data-type="empty"
                                     data-date={JSON.stringify(rowData.date)}
+                                    onDragEnter={handleEnter}
+                                    onDragOver={handleOver}
+                                    onDrop={handleDrop}
                                     className="col-8">
                                     {/* Transaction */}
                                     {account.transactions.map((transaction) => {
@@ -55,6 +94,10 @@ function ProjectionRow(props) {
                                             id={transaction._id}
                                             data-type="transaction"
                                             data-date={JSON.stringify(rowData.date)}
+                                            draggable
+                                            onDragStart={handleDragStart}
+                                            onDrag={handleDrag}
+                                            onDragEnd={handleDragEnd}
                                             className={transaction.type === "income"
                                                 ? "row text-success"
                                                 : "row"}>{transaction.label}: {transaction.value}</div>
