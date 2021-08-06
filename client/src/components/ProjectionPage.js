@@ -4,13 +4,13 @@ import AccountForm from "./AccountForm";
 import TransferForm from "./TransferForm";
 import TransactionForm from "./TransactionForm";
 import FormControls from "./FormControls";
+import SetDateForm from "./SetDateForm";
 import newTransaction from "../data/newTransaction";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 const moment = require('moment');
 
 let numDaysToProject = 90
-let lookBack = 7;
 
 function ProjectionPage() {
   const [transactions, setTransactions] = useState([]);
@@ -19,13 +19,11 @@ function ProjectionPage() {
   const [showAccountForm, setShowAccountForm] = useState(false);
   const [showTransferForm, setShowTransferForm] = useState(false);
   const [showTransactionForm, setShowTransactionForm] = useState(false);
+  const [showSetDateForm, setShowSetDateForm] = useState(null);
   const [itemToEdit, setItemToEdit] = useState(null);
   const [clickedRowDate, setClickedRowDate] = useState(null);
   const [dragElement, setDragElement] = useState(null);
-
-  // ----------
-  let startFromDate = moment().add(-lookBack, 'days').toObject();
-  // ----------
+  const [startFromDate, setStartFromDate] = useState(null);
 
   // API calls to get initial state
   useEffect(() => {
@@ -56,6 +54,15 @@ function ProjectionPage() {
       .catch(err => {
         console.log(err);
       });
+    //get all transfers
+    axios.post('/api/projectionDate/search', {})
+      .then(response => {
+        console.log("Setting projection date", response.data);
+        setStartFromDate(response.data[0]);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }, []);
 
   // -------------------------
@@ -71,7 +78,8 @@ function ProjectionPage() {
       accountBalances.push(account.balance);
     })
     for (let row = 0; row < numDaysToProject; row++) {
-      const rowDate = moment(startFromDate).add(row, 'days').startOf('day').toObject();
+
+      const rowDate = moment(startFromDate.date).add(row, 'days').startOf('day').toObject();
       // Create a projection row
       projection.push(
         {
@@ -95,25 +103,21 @@ function ProjectionPage() {
               accountToIndex = index;
             }
           })
-          if(accountFromIndex !== -1){
+          if (accountFromIndex !== -1) {
             let newBalance = accountBalances[accountFromIndex] - parseInt(transfer.value);
             // Add the FROM account transfer and balance to the projection rows account
             transfer.fromAccountLabel = accounts[accountFromIndex].label;
             projection[row].accounts[accountFromIndex].transfers.push(transfer);
-            if (lookBack < row) {
-              accountBalances[accountFromIndex] = newBalance;
-              projection[row].accounts[accountFromIndex].balance = newBalance;
-            }
+            accountBalances[accountFromIndex] = newBalance;
+            projection[row].accounts[accountFromIndex].balance = newBalance;
           }
-          if(accountToIndex !== -1){
+          if (accountToIndex !== -1) {
             let newBalance = accountBalances[accountToIndex] + parseInt(transfer.value);
             // Add the TO account transfer and balance to the projection rows account
             transfer.toAccountLabel = accounts[accountToIndex].label;
             projection[row].accounts[accountToIndex].transfers.push(transfer);
-            if (lookBack < row) {
-              accountBalances[accountToIndex] = newBalance;
-              projection[row].accounts[accountToIndex].balance = newBalance;
-            }
+            accountBalances[accountToIndex] = newBalance;
+            projection[row].accounts[accountToIndex].balance = newBalance;
           }
         }
       });
@@ -123,10 +127,8 @@ function ProjectionPage() {
           let newBalance = accountBalances[accountIndex] + parseInt(transaction.value);
           // Add the transaction and balance to the projection rows account
           projection[row].accounts[accountIndex].transactions.push(transaction);
-          if (lookBack < row) {
-            accountBalances[accountIndex] = newBalance;
-            projection[row].accounts[accountIndex].balance = newBalance;
-          }
+          accountBalances[accountIndex] = newBalance;
+          projection[row].accounts[accountIndex].balance = newBalance;
         }
       });
     }
@@ -248,8 +250,13 @@ function ProjectionPage() {
       setShowAccountForm(true);
       return;
     }
-
+    console.log(event);
     let eRowDate = JSON.parse(event.target.dataset.date);
+    if(type==="date") {
+      setShowSetDateForm(true);
+      setItemToEdit(eRowDate);
+      return;
+    }
     if (type === "empty") {
       let newItem = newTransaction;
       newItem.date = eRowDate;
@@ -319,7 +326,7 @@ function ProjectionPage() {
   //    Render Functions
   // -------------------------
   function renderRows() {
-    if(accounts.length > 0){
+    if (accounts.length > 0 && startFromDate !== null) {
       let projection = getProjection();
       return projection.map((rowData) => {
         return <ProjectionRow
@@ -335,6 +342,15 @@ function ProjectionPage() {
 
   return (
     <React.Fragment>
+      {showSetDateForm
+        ? <SetDateForm
+          startFromDate={startFromDate}
+          dateToEdit={itemToEdit}
+          setShowSetDateForm={setShowSetDateForm}
+          accounts={accounts}
+          handleUpdate={handleUpdate}
+        />
+        : null}
       {showTransferForm || showTransactionForm
         ? <FormControls
           setShowTransferForm={setShowTransferForm}
@@ -374,21 +390,21 @@ function ProjectionPage() {
           </div>
           {accounts.map((account) => {
             return (
-            <div className="col">
-              <div className="row">
-                <div className="col-12">
-                  {account.label}
+              <div className="col">
+                <div className="row">
+                  <div className="col-12">
+                    {account.label}
+                  </div>
                 </div>
-              </div>
-              <div className="row">
-                <div className="col-8">
-                  Transactions
+                <div className="row">
+                  <div className="col-8">
+                    Transactions
+                  </div>
+                  <div className="col-4">
+                    Balance
+                  </div>
                 </div>
-                <div className="col-4">
-                  Balance
-                </div>
-              </div>
-            </div>)
+              </div>)
           })}
         </div>
         {/* Date Rows */}

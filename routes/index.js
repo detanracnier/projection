@@ -3,12 +3,14 @@ const router = require("express").Router();
 const transactionRoutes = require("./transaction_routes");
 const transferRoutes = require("./transfer_routes");
 const accountRoutes = require("./account_routes");
+const projectionDateRoutes = require("./projection_date_routes");
 
 
 // Use routes
 router.use("/api/transaction", transactionRoutes);
 router.use("/api/transfer", transferRoutes);
 router.use("/api/account", accountRoutes);
+router.use("/api/projectionDate", projectionDateRoutes);
 
 router.use("*", (req, res) => {
     console.log(req.originalUrl);

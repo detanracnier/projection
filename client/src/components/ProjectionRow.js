@@ -58,14 +58,23 @@ function ProjectionRow(props) {
     return (
         <React.Fragment>
             {rowData.date.date === 1
-                ? <div className="row bg-info pl-5">
+                ? <div className="row bg-dark text-white pl-5">
                     {getMonthName(rowData.date)}
                 </div>
                 : null
             }
             <div className={checkIfInPast(rowData.date) ? "row border-bottom in-past" : "row border-bottom"}>
-                <div className="col-1 date-col">
-                    {rowData.date.date}<span className="day-of-week-label">{moment(rowData.date).format('dddd')}</span>
+                <div
+                    className="col-1 date-col"
+                    onClick={handleCellClicked}
+                    data-type="date"
+                    data-date={JSON.stringify(rowData.date)}
+                    >
+                    {rowData.date.date}<span
+                        className="day-of-week-label"
+                        data-type="date"
+                        data-date={JSON.stringify(rowData.date)}
+                    >{moment(rowData.date).format('dddd')}</span>
                 </div>
                 {rowData.accounts.map((account) => {
                     return (
@@ -117,20 +126,16 @@ function ProjectionRow(props) {
                                     })}
                                 </div>
                                 {/* Balance */}
-                                {checkIfInPast(rowData.date)
-                                    ? <div className="col-4 account-balance"></div>
-                                    :
-                                    <div
-                                        onClick={handleCellClicked}
-                                        id={account._id} data-type="account"
-                                        className={account.balance < 120
-                                            ? (account.balance < 0
-                                                ? "col-4 account-balance danger"
-                                                : "col-4 account-balance warning")
-                                            : "col-4 account-balance"}>
-                                        {account.balance}
-                                    </div>
-                                }
+                                <div
+                                    onClick={handleCellClicked}
+                                    id={account._id} data-type="account"
+                                    className={account.balance < 120
+                                        ? (account.balance < 0
+                                            ? "col-4 account-balance danger"
+                                            : "col-4 account-balance warning")
+                                        : "col-4 account-balance"}>
+                                    {account.balance}
+                                </div>
                             </div>
                         </div>
                     )
