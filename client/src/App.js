@@ -5,7 +5,7 @@ import TransfersPage from "./components/TransfersPage";
 import AccountsPage from "./components/AccountsPage";
 import { OktaAuth } from "@okta/okta-auth-js";
 import './App.css';
-const BASE_PATH =  process.env.BASE_PATH || "http://localhost:3001/";
+const BASE_PATH =  process.env.BASE_PATH || "https://rosio-projection.herokuapp.com/";
 
 const OktaAuthClient = new OktaAuth({
   scopes: [
