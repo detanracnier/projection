@@ -373,6 +373,7 @@ function ProjectionPage() {
           accounts={accounts}
           handleUpdateTransactions={handleUpdate}
           setShowForm={setShowTransactionForm}
+          clickedRowDate={clickedRowDate}
         />
         : null}
       {showAccountForm

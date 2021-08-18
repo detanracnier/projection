@@ -6,7 +6,7 @@ const moment = require('moment');
 
 function TransactionForm(props) {
 
-    const { transactionToEdit, accounts, handleUpdateTransactions, setShowForm } = props
+    const { transactionToEdit, accounts, handleUpdateTransactions, setShowForm, clickedRowDate } = props
     const [transaction, setTransaction] = useState(newTransaction);
     const [unsavedChanges, setUnsavedChanges] = useState(false);
 
@@ -58,12 +58,31 @@ function TransactionForm(props) {
         setShowForm(false);
     }
 
+    function handleDelete(){
+        console.log("deleting");
+        let data = transaction;
+        if(data.occurrence === "One-time"){
+            handleUpdateTransactions("delete", data._id, "transaction");
+            setShowForm(false);
+        } else {
+            data.exceptions.push({date: clickedRowDate, offset: -60 });
+            handleUpdateTransactions("update", data, "transaction");
+            setShowForm(false);
+        }
+    }
+
     return (
         <div id="modal-background" className="modal-bg" onClick={handleClickOut}>
             <div class="transaction-modal" >
-                <div className="row transaction-container" >
+                <div className="row transaction-container" style={{position: "relative"}} >
                     <div className="col-12 p-0">
                         <div className="row danger-gradient round-tl m-0" >
+                            <button
+                                class="bg-danger delete-corner-button"
+                                onClick={handleDelete}
+                            >
+                                X
+                            </button>
                             <div className="col-7 transaction-label">
                                 Label:
                                 <input

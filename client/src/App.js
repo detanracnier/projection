@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ProjectionPage from "./components/ProjectionPage";
 import TransactionsPage from "./components/TransactionsPage";
 import TransfersPage from "./components/TransfersPage";
 import AccountsPage from "./components/AccountsPage";
 import { OktaAuth } from "@okta/okta-auth-js";
 import './App.css';
-const BASE_PATH =  process.env.BASE_PATH || "https://rosio-projection.herokuapp.com/";
+const BASE_PATH =  "https://rosio-projection.herokuapp.com/";
 
 const OktaAuthClient = new OktaAuth({
   scopes: [
@@ -30,7 +30,7 @@ const OktaAuthClient = new OktaAuth({
 
 function App() {
 
-  const [authorized, setAuthorised] = useState(false);
+  const [notAuthorized, setNotAuthorised] = useState(true);
 
   async function checkAuthorization(){
     let oToken = await OktaAuthClient.tokenManager.getTokens();
@@ -42,15 +42,18 @@ function App() {
         let { tokens } = await OktaAuthClient.token.parseFromUrl()
         console.log("tokens",tokens);
         OktaAuthClient.tokenManager.setTokens(tokens);
+        setNotAuthorised(false);
       } else {
         OktaAuthClient.token.getWithRedirect({});
       }
+    } else {
+      setNotAuthorised(false);
     }
-    setAuthorised(true);
-
   }
 
-  checkAuthorization();
+  useEffect(()=>{
+    checkAuthorization();
+  })
 
   const [activePage, setActivePage] = useState("projection");
 
@@ -82,7 +85,7 @@ function App() {
     }
   }
 
-  if(!authorized){
+  if(notAuthorized){
     return (
       <div className="App">
         ...redirecting
